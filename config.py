@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Настройки базы данныйх
+# Настройки базы данных
 
 class Config:
     host="localhost"

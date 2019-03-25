@@ -29,7 +29,7 @@ logger.addHandler(stream_handler)
 
 
 options = Options()
-# options.add_argument('--headless')
+options.add_argument('--headless')
 options.add_argument("disable-extensions")
 options.add_argument("disable-infobars")
 options.add_argument("test-type")
@@ -60,7 +60,7 @@ class ParserStomatorg():
             Elem = WebDriverWait(self.browser, 35).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
         except TimeoutException:
             logger.exception('Элемент не загрузился')
-        soup = BeautifulSoup(browser.page_source, 'xml')
+        soup = BeautifulSoup(self.browser.page_source, 'xml')
         sort_btn = (soup.findAll('span', class_='js-sorter-btn'))
         sort_btn = [i.text for i in sort_btn]
         if sort_btn[-1] != 'Все':
@@ -126,7 +126,7 @@ class ParserStomatorg():
             return 'Не указан код'
 
         def photo():
-            photo = [i.get_attribute('src').split() for i in self.browser.find_elements_by_xpath('//img[@class="preview"]')]
+            photo = [i.get_attribute('src') for i in self.browser.find_elements_by_xpath('//img[@class="preview"]')]
             photo = ', '.join(photo[0])
             return photo
 
@@ -143,13 +143,13 @@ class ParserStomatorg():
         bar = progressbar.ProgressBar()
         main_section = self.get_buttons_menu()
         for btn in bar(range(len(main_section))): # главные разделы
-            p.browser.find_element_by_xpath('//*[@id="mobile-menu-burger"]/div/ul/li/*[contains(string(), "{}")]'.format(main_section[btn])).click()
+            self.browser.find_element_by_xpath('//*[@id="mobile-menu-burger"]/div/ul/li/*[contains(string(), "{}")]'.format(main_section[btn])).click()
             time.sleep(15)
-            links_sections = [i.get_attribute('href') for i in p.browser.find_elements_by_xpath('//ul[@class="nav-side__submenu nav-side__lvl2 lvl2 collapse in"]/li/a')]
+            links_sections = [i.get_attribute('href') for i in self.browser.find_elements_by_xpath('//ul[@class="nav-side__submenu nav-side__lvl2 lvl2 collapse in"]/li/a')]
             for link in links_sections[:]: # подразделы
                 time.sleep(2)
-                p.get_sections_page(link)
-                links = p.links_on_products()
+                self.get_sections_page(link)
+                links = self.links_on_products()
         return len(links)
 
     def checking_current_products(self):
@@ -187,7 +187,7 @@ def main_loop():
                 result = p.get_info_from_site(links[link_on_product], btn)
                 # logger.info('=== Начинаю парсить раздел : ' + str(result[-2]) + '===')
                 if check_existence_row_in_db(links[link_on_product]) == None:
-                    logger.debug('=== Забисываю в БД новый товар ===')
+                    logger.debug('=== Записываю в БД новый товар ===')
                     insert_row_to_current_database(result)
                 else:
                     current_price = result[2]
@@ -200,7 +200,6 @@ def main_loop():
                             pass
                         update_price(links[link_on_product], current_price)
                         logger.info('=== Цена товара обновлена ===')
-
             logger.info('=== Завершен сбор информации по разделу: ' + str(result[-2]) + '===')
 
 
@@ -208,4 +207,4 @@ def main_loop():
 p = ParserStomatorg('https://shop.stomatorg.ru/catalog/stomatologicheskie_materialy_/')
 
 if __name__ == '__main__':
-    print(p.get_links_from_section())
+    main_loop()
