@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -20,21 +19,17 @@ import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
 formatter = logging.Formatter('[%(asctime)s, level: %(levelname)s, file: %(name)s, function: %(funcName)s], message: %(message)s')
-
 file_handler = logging.FileHandler('logs/stomatorg.log', mode='w')
 file_handler.setFormatter(formatter)
 file_handler.setLevel(logging.ERROR)
-
 stream_handler = logging.StreamHandler()
-
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 
 options = Options()
-options.add_argument('--headless')
+# options.add_argument('--headless')
 options.add_argument("disable-extensions")
 options.add_argument("disable-infobars")
 options.add_argument("test-type")
@@ -42,7 +37,9 @@ options.add_argument("ignore-certificate-errors")
 options.add_argument("--start-maximized")
 options.add_argument('--no-sandbox')
 
+
 class ParserStomatorg():
+
 
     def __init__(self, url):
         self.url = url
@@ -63,10 +60,14 @@ class ParserStomatorg():
             Elem = WebDriverWait(self.browser, 35).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
         except TimeoutException:
             logger.exception('Элемент не загрузился')
-        self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]').click()
-        time.sleep(3) # all products selected
-        self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a').click()
-        time.sleep(3)
+        soup = BeautifulSoup(browser.page_source, 'xml')
+        sort_btn = (soup.findAll('span', class_='js-sorter-btn'))
+        sort_btn = [i.text for i in sort_btn]
+        if sort_btn[-1] != 'Все':
+            ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]')).click().perform()
+            time.sleep(7) # all products selected
+            ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a')).click().perform()
+            time.sleep(15)
         list_products = self.browser.find_elements_by_xpath('//a[@class="js-compare-label js-detail_page_url"]')
         links = [i.get_attribute('href') for i in list_products]
         logger.debug('=== Полученны ссылки на товары ===')
@@ -138,21 +139,56 @@ class ParserStomatorg():
         return result
 
 
+    def get_links_from_section(self):
+        bar = progressbar.ProgressBar()
+        main_section = self.get_buttons_menu()
+        for btn in bar(range(len(main_section))): # главные разделы
+            p.browser.find_element_by_xpath('//*[@id="mobile-menu-burger"]/div/ul/li/*[contains(string(), "{}")]'.format(main_section[btn])).click()
+            time.sleep(15)
+            links_sections = [i.get_attribute('href') for i in p.browser.find_elements_by_xpath('//ul[@class="nav-side__submenu nav-side__lvl2 lvl2 collapse in"]/li/a')]
+            for link in links_sections[:]: # подразделы
+                time.sleep(2)
+                p.get_sections_page(link)
+                links = p.links_on_products()
+        return len(links)
+
+    def checking_current_products(self):
+        """ Проверяет актуальность товаров,
+        если товара больше нет удаляет из основной таблицы и записывает в таблицу с историей """
+        links = self.get_links_from_section()
+        for i in get_all_href():
+            if i not in links:
+                logger.info(i)
+                try:
+                    insert_row_to_history_database(i)
+                    logger.info('=== Товара нет в продаже, записываю в таблицу с историей ===')
+                except IntegrityError:
+                    pass
+                try:
+                    delete_from_db(i)
+                    logger.info('=== Удаляю товар из основной таблицы ===')
+                except NoResultFound:
+                    pass
+
+
 
 def main_loop():
-    for btn in p.get_buttons_menu():
+
+    for btn in p.get_buttons_menu(): # главные разделы
         p.browser.find_element_by_xpath('//*[@id="mobile-menu-burger"]/div/ul/li/*[contains(string(), "{}")]'.format(btn)).click()
         time.sleep(15)
         links_sections = [i.get_attribute('href') for i in p.browser.find_elements_by_xpath('//ul[@class="nav-side__submenu nav-side__lvl2 lvl2 collapse in"]/li/a')]
-        for link in links_sections:
+        for link in links_sections[:]: # подразделы
+            time.sleep(2)
             p.get_sections_page(link)
             links = p.links_on_products()
             bar = progressbar.ProgressBar()
-            for link_on_product in bar(range(len(links))):
+            for link_on_product in bar(range(len(links))): # Ссылки на товары
                 result = p.get_info_from_site(links[link_on_product], btn)
+                # logger.info('=== Начинаю парсить раздел : ' + str(result[-2]) + '===')
                 if check_existence_row_in_db(links[link_on_product]) == None:
-                    insert_row_to_current_database(result)
                     logger.debug('=== Забисываю в БД новый товар ===')
+                    insert_row_to_current_database(result)
                 else:
                     current_price = result[2]
                     if int(current_price) != int(get_price_from_databse(links[link_on_product])):
@@ -164,18 +200,7 @@ def main_loop():
                             pass
                         update_price(links[link_on_product], current_price)
                         logger.info('=== Цена товара обновлена ===')
-                    for i in get_all_href():
-                        if i not in links:
-                            try:
-                                insert_row_to_history_database(links[link_on_product])
-                                logger.info('=== Товара нет, записываю в таблицу с историей ===')
-                            except IntegrityError:
-                                pass
-                            try:
-                                delete_from_db(links[link_on_product], result[8])
-                                logger.info('=== Удаляю товар из основной таблицы ===')
-                            except NoResultFound:
-                                pass
+
             logger.info('=== Завершен сбор информации по разделу: ' + str(result[-2]) + '===')
 
 
@@ -183,4 +208,4 @@ def main_loop():
 p = ParserStomatorg('https://shop.stomatorg.ru/catalog/stomatologicheskie_materialy_/')
 
 if __name__ == '__main__':
-    main_loop()
+    print(p.get_links_from_section())

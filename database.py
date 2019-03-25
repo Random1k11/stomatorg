@@ -8,10 +8,7 @@ import mysql.connector
 import datetime
 from config import Config
 
-# user = 'root'
-# pwd = 'root'
-# host = 'localhost'
-# db = 'stomatorg'
+
 engine = create_engine('mysql+mysqlconnector://{0}:{1}@{2}/{3}'.format(Config.user, Config.passwd, Config.host, Config.database))
 engine.execute("CREATE DATABASE IF NOT EXISTS " + Config.database) #create db
 engine.execute("USE " + Config.database) # select new db
@@ -23,6 +20,7 @@ Session = sessionmaker()
 Session.configure(bind=engine)
 Session.configure(bind=engine)
 session = Session()
+
 
 
 class Product(Base):
@@ -63,7 +61,7 @@ class HistoryProduct(Base):
     created_date = Column(DateTime, default=datetime.datetime.now,  primary_key=True)
 
     def __repr__(self):
-        return "<Product(title= '%s')>" % self.title
+        return "<History_Product(title= '%s')>" % self.title
 
 Base.metadata.create_all(engine)
 
@@ -88,12 +86,11 @@ def get_price_from_databse(href):
 
 
 def check_existence_row_in_db(href):
-    p = session.query(Product).filter(Product.href == href).scalar()
-    return p
+    return session.query(Product).filter(Product.href == href).scalar()
 
 
 def update_price(href, price):
-    p = session.query(Product).filter(Product.href == href).update(dict(price=price, created_date=datetime.datetime.now()))
+    session.query(Product).filter(Product.href == href).update(dict(price=price, created_date=datetime.datetime.now()))
     session.commit()
 
 
@@ -108,7 +105,7 @@ def get_all_href():
     return all_href_in_db
 
 
-def delete_from_db(href, result):
-    p = session.query(Product).filter(Product.href == href and Product.subsection == result[8]).one()
+def delete_from_db(href):
+    p = session.query(Product).filter(Product.href == href).one()
     session.delete(p)
     session.commit()
