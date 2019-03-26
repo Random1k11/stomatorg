@@ -276,4 +276,7 @@ p4 = ParserStomatorg(Config.section_link)
 
 
 if __name__ == '__main__':
-    main_loop(p1, p2, p3, p4)
+    try:
+        main_loop(p1, p2, p3, p4)
+    except exception:
+        logger.error('=== ОШИБКА ===')
