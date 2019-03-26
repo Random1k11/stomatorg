@@ -33,7 +33,7 @@ class Product(Base):
     price = Column(Integer)
     producer = Column(String(100))
     articul = Column(String(100))
-    code = Column(Integer, unique=True)
+    code = Column(Integer)
     photo = Column(Text)
     main_section = Column(String(100))
     subsection = Column(String(100))

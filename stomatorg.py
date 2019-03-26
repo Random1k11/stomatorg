@@ -63,6 +63,10 @@ class ParserStomatorg():
             logger.exception('Элемент не загрузился')
             self.browser.quit()
             self.__init__(link)
+            try:
+                Elem = WebDriverWait(self.browser, 35).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
+            except TimeoutException:
+                logger.exception('Элемент не загрузился')
         soup = BeautifulSoup(self.browser.page_source, 'xml')
         sort_btn = (soup.findAll('span', class_='js-sorter-btn'))
         sort_btn = [i.text for i in sort_btn]
@@ -183,6 +187,7 @@ def main_loop():
         p.browser.find_element_by_xpath('//*[@id="mobile-menu-burger"]/div/ul/li/*[contains(string(), "{}")]'.format(btn)).click()
         time.sleep(15)
         links_sections = [i.get_attribute('href') for i in p.browser.find_elements_by_xpath('//ul[@class="nav-side__submenu nav-side__lvl2 lvl2 collapse in"]/li/a')]
+        print(len(links_sections))
         for link in links_sections[:]: # подразделы
             time.sleep(2)
             p.get_sections_page(link)

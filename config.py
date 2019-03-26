@@ -2,6 +2,7 @@
 
 # Настройки базы данных и chromedriver
 
+
 class Config:
     host="localhost"
     user="root"
