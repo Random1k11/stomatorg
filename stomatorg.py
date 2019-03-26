@@ -199,20 +199,20 @@ def execution_time(func):
         return result
     return wrapper
 
-
+@execution_time
 def main_loop(p1, p2, p3, p4):
     main_and_sub = p1.get_list_main_sections_and_subsections()
     main_sections = main_and_sub[0]
     sections = main_and_sub[1]
     for btn in main_sections:
         bar = progressbar.ProgressBar()
-        for link in bar(range(12, len(sections))): # подразделы
+        for link in bar(range(len(sections))): # подразделы
             p1.get_sections_page(sections[link])
             time.sleep(5)
             links_on_prod = p1.links_on_products(sections[link])
             multi_threads(links_on_prod, btn, p1, p2, p3, p4)
 
-@execution_time
+# @execution_time
 def links_loop(p, links_on_prod, btn, start, end):
     links = links_on_prod[start:end]
     for link_on_product in links: # Ссылки на товары
