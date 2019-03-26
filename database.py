@@ -67,45 +67,84 @@ Base.metadata.create_all(engine)
 
 
 def insert_row_to_current_database(result):
-    p = Product(title=result[0], description=result[1], price=result[2], producer=result[3], articul=result[4],
-                code=result[5], photo=result[6], main_section=result[7], subsection=result[8], href=result[9])
-    session.add(p)
-    session.commit()
-
+    try:
+        p = Product(title=result[0], description=result[1], price=result[2], producer=result[3], articul=result[4],
+                    code=result[5], photo=result[6], main_section=result[7], subsection=result[8], href=result[9])
+        session.add(p)
+        session.commit()
+    except:
+        session.rollback()
+        session.add(p)
+        session.commit()
 
 def insert_row_to_history_database(result):
-    p = Product(title=result[0], description=result[1], price=result[2], producer=result[3], articul=result[4],
-                code=result[5], photo=result[6], main_section=result[7], subsection=result[8], href=result[9])
-    session.add(p)
-    session.commit()
+    try:
+        p = Product(title=result[0], description=result[1], price=result[2], producer=result[3], articul=result[4],
+                    code=result[5], photo=result[6], main_section=result[7], subsection=result[8], href=result[9])
+        session.add(p)
+        session.commit()
+    except:
+        session.rollback()
+        session.add(p)
+        session.commit()
 
 
 def get_price_from_databse(href):
-    p = session.query(Product).filter(Product.href == href).one()
+    try:
+        p = session.query(Product).filter(Product.href == href).one()
+    except:
+        session.rollback()
+        p = session.query(Product).filter(Product.href == href).one()
     return p.price
 
 
 def check_existence_row_in_db(href):
-    return session.query(Product).filter(Product.href == href).scalar()
-
+    try:
+        p = session.query(Product).filter(Product.href == href).scalar()
+    except:
+        session.rollback()
+        p = session.query(Product).filter(Product.href == href).scalar()
+    return p
 
 def update_price(href, price):
-    session.query(Product).filter(Product.href == href).update(dict(price=price, created_date=datetime.datetime.now()))
-    session.commit()
+    try:
+        session.query(Product).filter(Product.href == href).update(dict(price=price, created_date=datetime.datetime.now()))
+        session.commit()
+    except:
+        session.rollback()
+        session.query(Product).filter(Product.href == href).update(dict(price=price, created_date=datetime.datetime.now()))
+        session.commit()
+
 
 
 def insert_row_to_history_database(href):
-    session.execute('INSERT INTO History_Product (SELECT * FROM Product WHERE href="' + href + '");')
-    session.commit()
+    try:
+        session.execute('INSERT INTO History_Product (SELECT * FROM Product WHERE href="' + href + '");')
+        session.commit()
+    except:
+        session.rollback()
+        session.execute('INSERT INTO History_Product (SELECT * FROM Product WHERE href="' + href + '");')
+        session.commit()
 
 
 def get_all_href():
-    p = session.query(Product).all()
-    all_href_in_db = [i.href for i in p]
+    try:
+        p = session.query(Product).all()
+        all_href_in_db = [i.href for i in p]
+    except:
+        session.rollback()
+        p = session.query(Product).all()
+        all_href_in_db = [i.href for i in p]
     return all_href_in_db
 
 
 def delete_from_db(href):
-    p = session.query(Product).filter(Product.href == href).one()
-    session.delete(p)
-    session.commit()
+    try:
+        p = session.query(Product).filter(Product.href == href).one()
+        session.delete(p)
+        session.commit()
+    except:
+        session.rollback()
+        p = session.query(Product).filter(Product.href == href).one()
+        session.delete(p)
+        session.commit()

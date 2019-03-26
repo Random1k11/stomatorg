@@ -206,7 +206,7 @@ def main_loop(p1, p2, p3, p4):
     sections = main_and_sub[1]
     for btn in main_sections:
         bar = progressbar.ProgressBar()
-        for link in bar(range(len(sections))): # подразделы
+        for link in bar(range(12, len(sections))): # подразделы
             p1.get_sections_page(sections[link])
             time.sleep(5)
             links_on_prod = p1.links_on_products(sections[link])
@@ -276,7 +276,4 @@ p4 = ParserStomatorg(Config.section_link)
 
 
 if __name__ == '__main__':
-    try:
-        main_loop(p1, p2, p3, p4)
-    except exception:
-        logger.error('=== ОШИБКА ===')
+    main_loop(p1, p2, p3, p4)
