@@ -43,31 +43,38 @@ class ParserStomatorg():
 
     def __init__(self, url):
         self.url = url
-        self.browser = webdriver.Chrome('chromedriver', options=options)
+        self.browser = webdriver.Chrome(options=options)
         self.browser.get(self.url)
 
     def get_buttons_menu(self):
         try:
-            Elem = WebDriverWait(self.browser, 35).until(EC.presence_of_element_located((By.XPATH, '//li[@class="nav-side__item level2 "]')))
+            Elem = WebDriverWait(self.browser, 55).until(EC.presence_of_element_located((By.XPATH, '//li[@class="nav-side__item level2 "]')))
         except TimeoutException:
             logger.exception('Элемент не загрузился')
         main_menu = [i.text for i in self.browser.find_elements_by_xpath('//*[@id="mobile-menu-burger"]/div/ul/li')]
         logger.debug('=== Полученно основное меню ===')
         return main_menu
 
-    def links_on_products(self):
+    def links_on_products(self, link):
         try:
-            Elem = WebDriverWait(self.browser, 35).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
+            Elem = WebDriverWait(self.browser, 55).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
         except TimeoutException:
             logger.exception('Элемент не загрузился')
+            self.browser.quit()
+            self.__init__(link)
         soup = BeautifulSoup(self.browser.page_source, 'xml')
         sort_btn = (soup.findAll('span', class_='js-sorter-btn'))
         sort_btn = [i.text for i in sort_btn]
-        if sort_btn[-1] != 'Все':
-            ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]')).click().perform()
-            time.sleep(7) # all products selected
-            ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a')).click().perform()
-            time.sleep(15)
+        try:
+            if sort_btn[-1] != 'Все':
+                self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]').click()
+                # ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]')).click().perform()
+                time.sleep(7) # all products selected
+                self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a').click()
+                # ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a')).click().perform()
+                time.sleep(15)
+        except IndexError:
+            pass
         list_products = self.browser.find_elements_by_xpath('//a[@class="js-compare-label js-detail_page_url"]')
         links = [i.get_attribute('href') for i in list_products]
         logger.debug('=== Полученны ссылки на товары ===')
@@ -80,7 +87,7 @@ class ParserStomatorg():
 
         self.browser.get(page)
         try:
-            Elem = WebDriverWait(self.browser, 25).until(EC.presence_of_element_located((By.XPATH, '//div[@class="preview-wrap"]')))
+            Elem = WebDriverWait(self.browser, 55).until(EC.presence_of_element_located((By.XPATH, '//div[@class="preview-wrap"]')))
         except TimeoutException:
             print('время вышло')
         time.sleep(5)
@@ -149,7 +156,7 @@ class ParserStomatorg():
             for link in links_sections[:]: # подразделы
                 time.sleep(2)
                 self.get_sections_page(link)
-                links = self.links_on_products()
+                links = self.links_on_products(link)
         return len(links)
 
     def checking_current_products(self):
@@ -181,11 +188,10 @@ def main_loop():
         for link in links_sections[:]: # подразделы
             time.sleep(2)
             p.get_sections_page(link)
-            links = p.links_on_products()
+            links = p.links_on_products(link)
             bar = progressbar.ProgressBar()
             for link_on_product in bar(range(len(links))): # Ссылки на товары
                 result = p.get_info_from_site(links[link_on_product], btn)
-                # logger.info('=== Начинаю парсить раздел : ' + str(result[-2]) + '===')
                 if check_existence_row_in_db(links[link_on_product]) == None:
                     logger.debug('=== Записываю в БД новый товар ===')
                     insert_row_to_current_database(result)
@@ -200,7 +206,7 @@ def main_loop():
                             pass
                         update_price(links[link_on_product], current_price)
                         logger.info('=== Цена товара обновлена ===')
-            logger.info('=== Завершен сбор информации по разделу: ' + str(result[-2]) + '===')
+            logger.info('=== Завершен сбор информации по разделу: ' + str(result[-2]) + ' ===')
 
 
 

@@ -1,0 +1,173 @@
+1553581509661	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile.KlFhzcKKEKID"
+
+(firefox-esr:7149): Gtk-WARNING **: Theme parsing error: <data>:1:31: Expected ')' in color definition
+
+(firefox-esr:7149): Gtk-WARNING **: Theme parsing error: <data>:1:75: Expected ')' in color definition
+1553581511468	Marionette	INFO	Listening on port 34965
+1553581511569	Marionette	WARN	TLS certificate errors will be ignored for this session
+1553581542966	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile.0HR5ZvN62tB6"
+
+(firefox-esr:7336): Gtk-WARNING **: Theme parsing error: <data>:1:31: Expected ')' in color definition
+
+(firefox-esr:7336): Gtk-WARNING **: Theme parsing error: <data>:1:75: Expected ')' in color definition
+1553581544749	Marionette	INFO	Listening on port 41107
+1553581544775	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: https://shop.stomatorg.ru/catalog/stomatologicheskie_materialy_/, line 2: ReferenceError: PIXEL_ID is not defined
+
+(/usr/lib/firefox-esr/firefox-esr:7385): dconf-WARNING **: Unable to open /var/lib/snapd/desktop/dconf/profile/user: Отказано в доступе
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: https://shop.stomatorg.ru/catalog/terapiya/, line 2: ReferenceError: PIXEL_ID is not defined
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: https://shop.stomatorg.ru/catalog/adgezivnye_materialy/, line 2: ReferenceError: PIXEL_ID is not defined
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+JavaScript error: https://www.facebook.com/rsrc.php/v3/yq/r/5qtC5DdiDqA.js, line 217: Error: Network failure.
+1553581595535	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile.WKxk96cZMoE9"
+
+(firefox-esr:7573): Gtk-WARNING **: Theme parsing error: <data>:1:31: Expected ')' in color definition
+
+(firefox-esr:7573): Gtk-WARNING **: Theme parsing error: <data>:1:75: Expected ')' in color definition
+1553581597266	Marionette	INFO	Listening on port 38277
+1553581597342	Marionette	WARN	TLS certificate errors will be ignored for this session
+console.log: Accessibility service init or shutdown observer does not exist.
+*** UTM:SVC TimerManager:registerTimer called after profile-before-change notification. Ignoring timer registration for id: telemetry_modules_ping
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: https://shop.stomatorg.ru/catalog/stomatologicheskie_materialy_/, line 2: ReferenceError: PIXEL_ID is not defined
+
+(/usr/lib/firefox-esr/firefox-esr:7620): dconf-WARNING **: Unable to open /var/lib/snapd/desktop/dconf/profile/user: Отказано в доступе
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: https://shop.stomatorg.ru/catalog/terapiya/, line 2: ReferenceError: PIXEL_ID is not defined
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+1553581697769	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile.QtvpkEaOV4Xr"
+
+(firefox-esr:7802): Gtk-WARNING **: Theme parsing error: <data>:1:31: Expected ')' in color definition
+
+(firefox-esr:7802): Gtk-WARNING **: Theme parsing error: <data>:1:75: Expected ')' in color definition
+1553581699511	Marionette	INFO	Listening on port 45563
+1553581699582	Marionette	WARN	TLS certificate errors will be ignored for this session
+console.log: Accessibility service init or shutdown observer does not exist.
+[Parent 7573, Gecko_IOThread] WARNING: pipe error (86): Соединение разорвано другой стороной: file /build/firefox-esr-RdH8YM/firefox-esr-60.6.1esr/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 342
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: https://shop.stomatorg.ru/catalog/stomatologicheskie_materialy_/, line 2: ReferenceError: PIXEL_ID is not defined
+
+(/usr/lib/firefox-esr/firefox-esr:7850): dconf-WARNING **: Unable to open /var/lib/snapd/desktop/dconf/profile/user: Отказано в доступе
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: https://shop.stomatorg.ru/catalog/terapiya/, line 2: ReferenceError: PIXEL_ID is not defined
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+JavaScript error: https://www.facebook.com/rsrc.php/v3/yq/r/5qtC5DdiDqA.js, line 217: Error: Network failure.
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+1553581840167	mozrunner::runner	INFO	Running command: "/usr/bin/firefox" "-marionette" "-foreground" "-no-remote" "-profile" "/tmp/rust_mozprofile.0ldyemq7jWSq"
+
+(firefox-esr:8050): Gtk-WARNING **: Theme parsing error: <data>:1:31: Expected ')' in color definition
+
+(firefox-esr:8050): Gtk-WARNING **: Theme parsing error: <data>:1:75: Expected ')' in color definition
+1553581841899	Marionette	INFO	Listening on port 40363
+1553581841977	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: https://shop.stomatorg.ru/catalog/stomatologicheskie_materialy_/, line 2: ReferenceError: PIXEL_ID is not defined
+
+(/usr/lib/firefox-esr/firefox-esr:8098): dconf-WARNING **: Unable to open /var/lib/snapd/desktop/dconf/profile/user: Отказано в доступе
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: https://shop.stomatorg.ru/catalog/terapiya/, line 2: ReferenceError: PIXEL_ID is not defined
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+JavaScript warning: https://shop.stomatorg.ru/bitrix/components/bitrix/sale.gift.section/templates/.default/script.js?150863976631951, line 1280: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript warning: https://api-maps.yandex.ru/1.1/_YMaps.js?v=0.0.41, line 11: unreachable code after return statement
+JavaScript error: https://shop.stomatorg.ru/catalog/adgezivnye_materialy/, line 2: ReferenceError: PIXEL_ID is not defined
+JavaScript error: jar:file:///usr/lib/firefox-esr/omni.ja!/components/PeerConnection.js, line 1813: TypeError: this._dompc._pc is undefined
+console.log: Accessibility service init or shutdown observer does not exist.
+console.log: Accessibility service init or shutdown observer does not exist.
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+
+IPDL protocol error: Handler returned error code!
+
+###!!! [Parent][DispatchAsyncMessage] Error: PLayerTransaction::Msg_ReleaseLayer Processing error: message was deserialized, but the handler returned false (indicating failure)
+

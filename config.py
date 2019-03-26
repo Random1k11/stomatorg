@@ -7,4 +7,4 @@ class Config:
     user="root"
     passwd="root"
     database="stomatorg"
-    table="dental_materials"
+  
