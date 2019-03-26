@@ -15,6 +15,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 import progressbar
 import logging
+from config import Config
 
 
 logger = logging.getLogger(__name__)
@@ -43,12 +44,12 @@ class ParserStomatorg():
 
     def __init__(self, url):
         self.url = url
-        self.browser = webdriver.Chrome(options=options)
+        self.browser = webdriver.Chrome(Config.path_to_chromedriver, options=options)
         self.browser.get(self.url)
 
     def get_buttons_menu(self):
         try:
-            Elem = WebDriverWait(self.browser, 55).until(EC.presence_of_element_located((By.XPATH, '//li[@class="nav-side__item level2 "]')))
+            Elem = WebDriverWait(self.browser, 35).until(EC.presence_of_element_located((By.XPATH, '//li[@class="nav-side__item level2 "]')))
         except TimeoutException:
             logger.exception('Элемент не загрузился')
         main_menu = [i.text for i in self.browser.find_elements_by_xpath('//*[@id="mobile-menu-burger"]/div/ul/li')]
@@ -57,7 +58,7 @@ class ParserStomatorg():
 
     def links_on_products(self, link):
         try:
-            Elem = WebDriverWait(self.browser, 55).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
+            Elem = WebDriverWait(self.browser, 35).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
         except TimeoutException:
             logger.exception('Элемент не загрузился')
             self.browser.quit()
@@ -68,10 +69,8 @@ class ParserStomatorg():
         try:
             if sort_btn[-1] != 'Все':
                 self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]').click()
-                # ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]')).click().perform()
                 time.sleep(7) # all products selected
                 self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a').click()
-                # ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a')).click().perform()
                 time.sleep(15)
         except IndexError:
             pass
@@ -90,7 +89,6 @@ class ParserStomatorg():
             Elem = WebDriverWait(self.browser, 55).until(EC.presence_of_element_located((By.XPATH, '//div[@class="preview-wrap"]')))
         except TimeoutException:
             print('время вышло')
-        time.sleep(5)
 
         def subsection():
             return self.browser.find_elements_by_xpath('//a[@itemprop="item"]')[-1].text
