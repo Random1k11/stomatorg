@@ -16,7 +16,8 @@ from sqlalchemy.exc import IntegrityError
 import progressbar
 import logging
 from config import Config
-
+import multiprocessing
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -58,13 +59,13 @@ class ParserStomatorg():
 
     def links_on_products(self, link):
         try:
-            Elem = WebDriverWait(self.browser, 35).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
+            Elem = WebDriverWait(self.browser, 45).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
         except TimeoutException:
             logger.exception('Элемент не загрузился')
             self.browser.quit()
             self.__init__(link)
             try:
-                Elem = WebDriverWait(self.browser, 35).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
+                Elem = WebDriverWait(self.browser, 45).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
             except TimeoutException:
                 logger.exception('Элемент не загрузился')
         soup = BeautifulSoup(self.browser.page_source, 'xml')
@@ -92,7 +93,12 @@ class ParserStomatorg():
         try:
             Elem = WebDriverWait(self.browser, 55).until(EC.presence_of_element_located((By.XPATH, '//div[@class="preview-wrap"]')))
         except TimeoutException:
-            print('время вышло')
+            logger.exception('Элемент не загрузился')
+
+        try:
+            Elem = WebDriverWait(self.browser, 55).until(EC.presence_of_element_located((By.XPATH, '//div[@class="product-announce"]')))
+        except TimeoutException:
+            logger.exception('Элемент не загрузился')
 
         def subsection():
             return self.browser.find_elements_by_xpath('//a[@itemprop="item"]')[-1].text
@@ -148,18 +154,23 @@ class ParserStomatorg():
         return result
 
 
-    def get_links_from_section(self):
-        bar = progressbar.ProgressBar()
+    def get_list_main_sections_and_subsections(self):
         main_section = self.get_buttons_menu()
-        for btn in bar(range(len(main_section))): # главные разделы
-            self.browser.find_element_by_xpath('//*[@id="mobile-menu-burger"]/div/ul/li/*[contains(string(), "{}")]'.format(main_section[btn])).click()
-            time.sleep(15)
-            links_sections = [i.get_attribute('href') for i in self.browser.find_elements_by_xpath('//ul[@class="nav-side__submenu nav-side__lvl2 lvl2 collapse in"]/li/a')]
-            for link in links_sections[:]: # подразделы
+        links_sections = []
+        for btn in main_section: # главные разделы
+            self.browser.find_element_by_xpath('//*[@id="mobile-menu-burger"]/div/ul/li/*[contains(string(), "{}")]'.format(btn)).click()
+            time.sleep(3)
+            for i in self.browser.find_elements_by_xpath('//ul[@class="nav-side__submenu nav-side__lvl2 lvl2 collapse in"]/li/a'):
+                links_sections.append(i.get_attribute('href'))
+        return [main_section, links_sections]
+
+
+    def get_links_from_section(self):
+            for link in self.get_list_subsections(): # подразделы
                 time.sleep(2)
                 self.get_sections_page(link)
                 links = self.links_on_products(link)
-        return len(links)
+            return len(links)
 
     def checking_current_products(self):
         """ Проверяет актуальность товаров,
@@ -180,40 +191,89 @@ class ParserStomatorg():
                     pass
 
 
-
-def main_loop():
-
-    for btn in p.get_buttons_menu(): # главные разделы
-        p.browser.find_element_by_xpath('//*[@id="mobile-menu-burger"]/div/ul/li/*[contains(string(), "{}")]'.format(btn)).click()
-        time.sleep(15)
-        links_sections = [i.get_attribute('href') for i in p.browser.find_elements_by_xpath('//ul[@class="nav-side__submenu nav-side__lvl2 lvl2 collapse in"]/li/a')]
-        print(len(links_sections))
-        for link in links_sections[:]: # подразделы
-            time.sleep(2)
-            p.get_sections_page(link)
-            links = p.links_on_products(link)
-            bar = progressbar.ProgressBar()
-            for link_on_product in bar(range(len(links))): # Ссылки на товары
-                result = p.get_info_from_site(links[link_on_product], btn)
-                if check_existence_row_in_db(links[link_on_product]) == None:
-                    logger.debug('=== Записываю в БД новый товар ===')
-                    insert_row_to_current_database(result)
-                else:
-                    current_price = result[2]
-                    if int(current_price) != int(get_price_from_databse(links[link_on_product])):
-                        logger.info('=== Цена товара изменилась ===')
-                        try:
-                            insert_row_to_history_database(links[link_on_product])
-                            logger.info('=== Записываю в таблицу с историей ===')
-                        except IntegrityError:
-                            pass
-                        update_price(links[link_on_product], current_price)
-                        logger.info('=== Цена товара обновлена ===')
-            logger.info('=== Завершен сбор информации по разделу: ' + str(result[-2]) + ' ===')
+def execution_time(func):
+    def wrapper(*args, **kwargs):
+        start = datetime.now()
+        result = func(*args, **kwargs)
+        print('Время сбора информации: ', datetime.now() - start)
+        return result
+    return wrapper
 
 
+def main_loop(p1, p2, p3, p4):
+    main_and_sub = p1.get_list_main_sections_and_subsections()
+    main_sections = main_and_sub[0]
+    sections = main_and_sub[1]
+    for btn in main_sections:
+        bar = progressbar.ProgressBar()
+        for link in bar(range(len(sections))): # подразделы
+            p1.get_sections_page(sections[link])
+            time.sleep(5)
+            links_on_prod = p1.links_on_products(sections[link])
+            multi_threads(links_on_prod, btn, p1, p2, p3, p4)
 
-p = ParserStomatorg('https://shop.stomatorg.ru/catalog/stomatologicheskie_materialy_/')
+@execution_time
+def links_loop(p, links_on_prod, btn, start, end):
+    links = links_on_prod[start:end]
+    for link_on_product in links: # Ссылки на товары
+        result = p.get_info_from_site(link_on_product, btn)
+        if check_existence_row_in_db(link_on_product) == None:
+            logger.debug('=== Записываю в БД новый товар ===')
+            insert_row_to_current_database(result)
+        else:
+            current_price = result[2]
+            if int(current_price) != int(get_price_from_databse(link_on_product)):
+                logger.info('=== Цена товара изменилась ===')
+                try:
+                    insert_row_to_history_database(link_on_product)
+                    logger.info('=== Записываю в таблицу с историей ===')
+                except IntegrityError:
+                    pass
+                update_price(link_on_product, current_price)
+                logger.info('=== Цена товара обновлена ===')
+    logger.info('=== Завершен сбор информации по разделу: ' + str(result[-2]) + ' ===')
+
+
+
+
+def multi_threads(links_on_prod, btn, p1, p2, p3, p4):
+
+    number_of_sections_per_thread = len(links_on_prod) / 4
+
+    t1 = round(number_of_sections_per_thread)
+    t2 = round(number_of_sections_per_thread) + t1
+    t3 = round(number_of_sections_per_thread) + t2
+    t4 = len(links_on_prod)
+
+    thread_1 = multiprocessing.Process(
+        target=links_loop, args=(p1, links_on_prod, btn, 0, t1)
+    )
+    thread_2 = multiprocessing.Process(
+        target=links_loop, args=(p2, links_on_prod, btn, t1, t2)
+    )
+    thread_3 = multiprocessing.Process(
+        target=links_loop, args=(p3, links_on_prod, btn, t2, t3)
+    )
+    thread_4 = multiprocessing.Process(
+        target=links_loop, args=(p4, links_on_prod, btn, t3, t4)
+    )
+
+    thread_1.start()
+    thread_2.start()
+    thread_3.start()
+    thread_4.start()
+
+    thread_1.join()
+    thread_2.join()
+    thread_3.join()
+    thread_4.join()
+
+
+p1 = ParserStomatorg(Config.section_link)
+p2 = ParserStomatorg(Config.section_link)
+p3 = ParserStomatorg(Config.section_link)
+p4 = ParserStomatorg(Config.section_link)
+
 
 if __name__ == '__main__':
-    main_loop()
+    main_loop(p1, p2, p3, p4)
