@@ -20,7 +20,7 @@ import multiprocessing
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.CRITICAL)
+logger.setLevel(logging.INFO)
 formatter = logging.Formatter('[%(asctime)s, level: %(levelname)s, file: %(name)s, function: %(funcName)s], message: %(message)s')
 file_handler = logging.FileHandler('logs/stomatorg.log', mode='w')
 file_handler.setFormatter(formatter)
@@ -31,7 +31,7 @@ logger.addHandler(stream_handler)
 
 
 options = Options()
-# options.add_argument('--headless')
+options.add_argument('--headless')
 options.add_argument("disable-extensions")
 options.add_argument("disable-infobars")
 options.add_argument("test-type")
@@ -64,19 +64,31 @@ class ParserStomatorg():
             logger.exception('Элемент не загрузился')
             self.browser.quit()
             self.__init__(link)
-            try:
-                Elem = WebDriverWait(self.browser, 45).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
-            except TimeoutException:
-                logger.exception('Элемент не загрузился')
+            time.sleep(3)
+        try:
+            Elem = WebDriverWait(self.browser, 45).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
+        except TimeoutException:
+            logger.exception('Элемент не загрузился')
+            self.browser.quit()
+            self.__init__(link)
+            time.sleep(3)
         soup = BeautifulSoup(self.browser.page_source, 'xml')
         sort_btn = (soup.findAll('span', class_='js-sorter-btn'))
         sort_btn = [i.text for i in sort_btn]
         try:
             if sort_btn[-1] != 'Все':
-                self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]').click()
+                ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]')).click().perform()
                 time.sleep(7) # all products selected
-                self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a').click()
+                ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a')).click().perform()
                 time.sleep(15)
+                soup = BeautifulSoup(self.browser.page_source, 'xml')
+                sort_btn = (soup.findAll('span', class_='js-sorter-btn'))
+                sort_btn = [i.text for i in sort_btn]
+                if sort_btn[-1] != 'Все':
+                    ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]')).click().perform()
+                    time.sleep(7) # all products selected
+                    ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a')).click().perform()
+                    time.sleep(15)
         except IndexError:
             pass
         list_products = self.browser.find_elements_by_xpath('//a[@class="js-compare-label js-detail_page_url"]')
@@ -87,7 +99,7 @@ class ParserStomatorg():
     def get_sections_page(self, page):
         self.browser.get(page)
 
-    def get_info_from_site(self, page, main_section):
+    def get_info_from_site(self, page):
 
         self.browser.get(page)
         try:
@@ -154,7 +166,7 @@ class ParserStomatorg():
             return self.browser.current_url
 
 
-        result = [title(), description(), price(), producer(), artikul(), code(), photo()[0][0], subsection(), href()]
+        result = [title(), description(), price(), producer(), artikul(), code(), photo(), subsection(), href()]
         logger.debug('=== Получена информация о товаре ===')
         return result
 
@@ -235,14 +247,13 @@ def links_loop(p, links_on_prod, start, end):
                     pass
                 update_price(link_on_product, current_price)
                 logger.info('=== Цена товара обновлена ===')
-    p.browser.quit()
-    p.__init__(link_on_product)
+
     logger.info('=== Завершен сбор информации по разделу: ' + str(result[-2]) + ' ===')
 
 
 
 
-def multi_threads(links_on_prod, btn, p1, p2, p3, p4):
+def multi_threads(links_on_prod, p1, p2, p3, p4):
 
     number_of_sections_per_thread = len(links_on_prod) / 4
 
@@ -252,16 +263,16 @@ def multi_threads(links_on_prod, btn, p1, p2, p3, p4):
     t4 = len(links_on_prod)
 
     thread_1 = multiprocessing.Process(
-        target=links_loop, args=(p1, links_on_prod, btn, 0, t1)
+        target=links_loop, args=(p1, links_on_prod, 0, t1)
     )
     thread_2 = multiprocessing.Process(
-        target=links_loop, args=(p2, links_on_prod, btn, t1, t2)
+        target=links_loop, args=(p2, links_on_prod, t1, t2)
     )
     thread_3 = multiprocessing.Process(
-        target=links_loop, args=(p3, links_on_prod, btn, t2, t3)
+        target=links_loop, args=(p3, links_on_prod, t2, t3)
     )
     thread_4 = multiprocessing.Process(
-        target=links_loop, args=(p4, links_on_prod, btn, t3, t4)
+        target=links_loop, args=(p4, links_on_prod, t3, t4)
     )
 
     thread_1.start()

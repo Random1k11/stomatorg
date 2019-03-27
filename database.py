@@ -11,14 +11,13 @@ from config import Config
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.CRITICAL)
+logger.setLevel(logging.ERROR)
 formatter = logging.Formatter('[%(asctime)s, level: %(levelname)s, file: %(name)s, function: %(funcName)s], message: %(message)s')
 file_handler = logging.FileHandler('logs/database.log', mode='w')
 file_handler.setFormatter(formatter)
 file_handler.setLevel(logging.ERROR)
-stream_handler = logging.StreamHandler()
 logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
+
 
 
 engine = create_engine('mysql+mysqlconnector://{0}:{1}@{2}/{3}'.format(Config.user, Config.passwd, Config.host, Config.database))
@@ -79,12 +78,14 @@ Base.metadata.create_all(engine)
 def insert_row_to_current_database(result):
     try:
         p = Product(title=result[0], description=result[1], price=result[2], producer=result[3], articul=result[4],
-                    code=result[5], photo=result[6], main_section=result[7], subsection=result[8], href=result[9])
+                    code=result[5], photo=result[6], subsection=result[7], href=result[8])
         session.add(p)
         session.commit()
     except:
-        logger.error('Ошибка при записи нового товара в БД')
+        logger.exception('Ошибка при записи нового товара в БД: ' + p)
         session.rollback()
+        p = Product(title=result[0], description=result[1], price=result[2], producer=result[3], articul=result[4],
+                    code=result[5], photo=result[6], subsection=result[7], href=result[8])
         session.add(p)
         session.commit()
 
@@ -93,7 +94,7 @@ def get_price_from_databse(href):
     try:
         p = session.query(Product).filter(Product.href == href).one()
     except:
-        logger.error('Ошибка при получении информации о цене товара')
+        logger.exception('Ошибка при получении информации о цене товара: ' + href)
         session.rollback()
         p = session.query(Product).filter(Product.href == href).one()
         return p.price
@@ -103,19 +104,19 @@ def get_price_from_databse(href):
 def check_existence_row_in_db(href):
     try:
         p = session.query(Product).filter(Product.href == href).scalar()
+        return p
     except:
-        logger.error('Ошибка при проверки на существование в БД')
+        logger.exception('Ошибка при проверки на существование в БД ' + href)
         session.rollback()
         p = session.query(Product).filter(Product.href == href).scalar()
         return p
-    return p
 
 def update_price(href, price):
     try:
         session.query(Product).filter(Product.href == href).update(dict(price=price, created_date=datetime.datetime.now()))
         session.commit()
     except:
-        logger.error('Ошибка при обновлении цены товара')
+        logger.exception('Ошибка при обновлении цены товара ' + href)
         session.rollback()
         session.query(Product).filter(Product.href == href).update(dict(price=price, created_date=datetime.datetime.now()))
         session.commit()
@@ -127,7 +128,7 @@ def insert_row_to_history_database(href):
         session.execute('INSERT INTO History_Product (SELECT * FROM Product WHERE href="' + href + '");')
         session.commit()
     except:
-        logger.error('Ошибка при записи товара в историческую БД')
+        logger.exception('Ошибка при записи товара в историческую БД: ' + href)
         session.rollback()
         session.execute('INSERT INTO History_Product (SELECT * FROM Product WHERE href="' + href + '");')
         session.commit()
@@ -138,7 +139,7 @@ def get_all_href():
         p = session.query(Product).all()
         all_href_in_db = [i.href for i in p]
     except:
-        logger.error('Ошибка при получении ссылок на товары из БД')
+        logger.exception('Ошибка при получении ссылок на товары из БД')
         session.rollback()
         p = session.query(Product).all()
         all_href_in_db = [i.href for i in p]
@@ -152,7 +153,7 @@ def delete_from_db(href):
         session.delete(p)
         session.commit()
     except:
-        logger.error('Ошибка при удалении товара из основной БД')
+        logger.exception('Ошибка при удалении товара из основной БД: ' + href)
         session.rollback()
         p = session.query(Product).filter(Product.href == href).one()
         session.delete(p)
