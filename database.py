@@ -93,12 +93,16 @@ def insert_row_to_current_database(result):
 def get_price_from_databse(href):
     try:
         p = session.query(Product).filter(Product.href == href).one()
+        return p.price
     except:
         logger.exception('Ошибка при получении информации о цене товара: ' + href)
         session.rollback()
-        p = session.query(Product).filter(Product.href == href).one()
-        return p.price
-    return p.price
+        try:
+            p = session.query(Product).filter(Product.href == href).one()
+            return p.price
+        except:
+            pass
+
 
 
 def check_existence_row_in_db(href):

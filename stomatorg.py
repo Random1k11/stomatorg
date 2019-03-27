@@ -31,7 +31,7 @@ logger.addHandler(stream_handler)
 
 
 options = Options()
-options.add_argument('--headless')
+# options.add_argument('--headless')
 options.add_argument("disable-extensions")
 options.add_argument("disable-infobars")
 options.add_argument("test-type")
@@ -58,6 +58,7 @@ class ParserStomatorg():
         return main_menu
 
     def links_on_products(self, link):
+        self.browser.get(link)
         try:
             Elem = WebDriverWait(self.browser, 45).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
         except TimeoutException:
@@ -84,11 +85,6 @@ class ParserStomatorg():
                 soup = BeautifulSoup(self.browser.page_source, 'xml')
                 sort_btn = (soup.findAll('span', class_='js-sorter-btn'))
                 sort_btn = [i.text for i in sort_btn]
-                if sort_btn[-1] != 'Все':
-                    ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//button[@id="dropdownMenuOutput"]')).click().perform()
-                    time.sleep(7) # all products selected
-                    ActionChains(self.browser).move_to_element(self.browser.find_element_by_xpath('//*[@id="composite_sorter"]/div[3]/div/ul/li[7]/a')).click().perform()
-                    time.sleep(15)
         except IndexError:
             pass
         list_products = self.browser.find_elements_by_xpath('//a[@class="js-compare-label js-detail_page_url"]')
@@ -185,7 +181,7 @@ class ParserStomatorg():
     def get_links_from_section(self):
             for link in self.get_list_subsections(): # подразделы
                 time.sleep(2)
-                self.get_sections_page(link)
+                # self.get_sections_page(link)
                 links = self.links_on_products(link)
             return len(links)
 
@@ -231,21 +227,22 @@ def main_loop(p1, p2, p3, p4):
 # @execution_time
 def links_loop(p, links_on_prod, start, end):
     links = links_on_prod[start:end]
-    for link_on_product in links: # Ссылки на товары
-        result = p.get_info_from_site(link_on_product)
-        if check_existence_row_in_db(link_on_product) == None:
+    bar = progressbar.ProgressBar()
+    for link_on_product in bar(range(len(links))): # Ссылки на товары
+        result = p.get_info_from_site(links[link_on_product])
+        if check_existence_row_in_db(links[link_on_product]) == None:
             logger.debug('=== Записываю в БД новый товар ===')
             insert_row_to_current_database(result)
         else:
             current_price = result[2]
-            if int(current_price) != int(get_price_from_databse(link_on_product)):
+            if int(current_price) != int(get_price_from_databse(links[link_on_product])):
                 logger.info('=== Цена товара изменилась ===')
                 try:
-                    insert_row_to_history_database(link_on_product)
+                    insert_row_to_history_database(links[link_on_product])
                     logger.info('=== Записываю в таблицу с историей ===')
                 except IntegrityError:
                     pass
-                update_price(link_on_product, current_price)
+                update_price(links[link_on_product], current_price)
                 logger.info('=== Цена товара обновлена ===')
 
     logger.info('=== Завершен сбор информации по разделу: ' + str(result[-2]) + ' ===')
