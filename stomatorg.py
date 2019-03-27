@@ -31,7 +31,7 @@ logger.addHandler(stream_handler)
 
 
 options = Options()
-options.add_argument('--headless')
+# options.add_argument('--headless')
 options.add_argument("disable-extensions")
 options.add_argument("disable-infobars")
 options.add_argument("test-type")
@@ -147,14 +147,14 @@ class ParserStomatorg():
 
         def photo():
             photo = [i.get_attribute('src') for i in self.browser.find_elements_by_xpath('//img[@class="preview"]')]
-            photo = ', '.join(photo[0])
+            photo = ', '.join(photo)
             return photo
 
         def href():
             return self.browser.current_url
 
 
-        result = [title(), description(), price(), producer(), artikul(), code(), photo()[0][0], main_section, subsection(), href()]
+        result = [title(), description(), price(), producer(), artikul(), code(), photo()[0][0], subsection(), href()]
         logger.debug('=== Получена информация о товаре ===')
         return result
 
@@ -209,19 +209,18 @@ def main_loop(p1, p2, p3, p4):
     main_and_sub = p1.get_list_main_sections_and_subsections()
     main_sections = main_and_sub[0]
     sections = main_and_sub[1]
-    for btn in main_sections:
-        bar = progressbar.ProgressBar()
-        for link in bar(range(len(sections))): # подразделы
-            p1.get_sections_page(sections[link])
-            time.sleep(5)
-            links_on_prod = p1.links_on_products(sections[link])
-            multi_threads(links_on_prod, btn, p1, p2, p3, p4)
+    bar = progressbar.ProgressBar()
+    for link in bar(range(len(sections))): # подразделы
+        p1.get_sections_page(sections[link])
+        time.sleep(5)
+        links_on_prod = p1.links_on_products(sections[link])
+        multi_threads(links_on_prod, p1, p2, p3, p4)
 
 # @execution_time
-def links_loop(p, links_on_prod, btn, start, end):
+def links_loop(p, links_on_prod, start, end):
     links = links_on_prod[start:end]
     for link_on_product in links: # Ссылки на товары
-        result = p.get_info_from_site(link_on_product, btn)
+        result = p.get_info_from_site(link_on_product)
         if check_existence_row_in_db(link_on_product) == None:
             logger.debug('=== Записываю в БД новый товар ===')
             insert_row_to_current_database(result)
@@ -236,6 +235,8 @@ def links_loop(p, links_on_prod, btn, start, end):
                     pass
                 update_price(link_on_product, current_price)
                 logger.info('=== Цена товара обновлена ===')
+    p.browser.quit()
+    p.__init__(link_on_product)
     logger.info('=== Завершен сбор информации по разделу: ' + str(result[-2]) + ' ===')
 
 
