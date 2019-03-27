@@ -20,7 +20,7 @@ import multiprocessing
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.CRITICAL)
 formatter = logging.Formatter('[%(asctime)s, level: %(levelname)s, file: %(name)s, function: %(funcName)s], message: %(message)s')
 file_handler = logging.FileHandler('logs/stomatorg.log', mode='w')
 file_handler.setFormatter(formatter)
@@ -94,11 +94,16 @@ class ParserStomatorg():
             Elem = WebDriverWait(self.browser, 55).until(EC.presence_of_element_located((By.XPATH, '//div[@class="preview-wrap"]')))
         except TimeoutException:
             logger.exception('Элемент не загрузился')
-
+            self.browser.quit()
+            self.__init__(page)
+            time.sleep(10)
         try:
             Elem = WebDriverWait(self.browser, 55).until(EC.presence_of_element_located((By.XPATH, '//div[@class="product-announce"]')))
         except TimeoutException:
             logger.exception('Элемент не загрузился')
+            self.browser.quit()
+            self.__init__(page)
+            time.sleep(10)
 
         def subsection():
             return self.browser.find_elements_by_xpath('//a[@itemprop="item"]')[-1].text

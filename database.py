@@ -6,7 +6,19 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 import mysql.connector
 import datetime
+import logging
 from config import Config
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.CRITICAL)
+formatter = logging.Formatter('[%(asctime)s, level: %(levelname)s, file: %(name)s, function: %(funcName)s], message: %(message)s')
+file_handler = logging.FileHandler('logs/database.log', mode='w')
+file_handler.setFormatter(formatter)
+file_handler.setLevel(logging.ERROR)
+stream_handler = logging.StreamHandler()
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 
 engine = create_engine('mysql+mysqlconnector://{0}:{1}@{2}/{3}'.format(Config.user, Config.passwd, Config.host, Config.database))
@@ -73,17 +85,7 @@ def insert_row_to_current_database(result):
         session.add(p)
         session.commit()
     except:
-        session.rollback()
-        session.add(p)
-        session.commit()
-
-def insert_row_to_history_database(result):
-    try:
-        p = Product(title=result[0], description=result[1], price=result[2], producer=result[3], articul=result[4],
-                    code=result[5], photo=result[6], main_section=result[7], subsection=result[8], href=result[9])
-        session.add(p)
-        session.commit()
-    except:
+        logger.error('Ошибка при записи нового товара в БД')
         session.rollback()
         session.add(p)
         session.commit()
@@ -93,8 +95,10 @@ def get_price_from_databse(href):
     try:
         p = session.query(Product).filter(Product.href == href).one()
     except:
+        logger.error('Ошибка при получении информации о цене товара')
         session.rollback()
         p = session.query(Product).filter(Product.href == href).one()
+        return p.price
     return p.price
 
 
@@ -102,8 +106,10 @@ def check_existence_row_in_db(href):
     try:
         p = session.query(Product).filter(Product.href == href).scalar()
     except:
+        logger.error('Ошибка при проверки на существование в БД')
         session.rollback()
         p = session.query(Product).filter(Product.href == href).scalar()
+        return p
     return p
 
 def update_price(href, price):
@@ -111,6 +117,7 @@ def update_price(href, price):
         session.query(Product).filter(Product.href == href).update(dict(price=price, created_date=datetime.datetime.now()))
         session.commit()
     except:
+        logger.error('Ошибка при обновлении цены товара')
         session.rollback()
         session.query(Product).filter(Product.href == href).update(dict(price=price, created_date=datetime.datetime.now()))
         session.commit()
@@ -122,6 +129,7 @@ def insert_row_to_history_database(href):
         session.execute('INSERT INTO History_Product (SELECT * FROM Product WHERE href="' + href + '");')
         session.commit()
     except:
+        logger.error('Ошибка при записи товара в историческую БД')
         session.rollback()
         session.execute('INSERT INTO History_Product (SELECT * FROM Product WHERE href="' + href + '");')
         session.commit()
@@ -132,9 +140,11 @@ def get_all_href():
         p = session.query(Product).all()
         all_href_in_db = [i.href for i in p]
     except:
+        logger.error('Ошибка при получении ссылок на товары из БД')
         session.rollback()
         p = session.query(Product).all()
         all_href_in_db = [i.href for i in p]
+        return all_href_in_db
     return all_href_in_db
 
 
@@ -144,6 +154,7 @@ def delete_from_db(href):
         session.delete(p)
         session.commit()
     except:
+        logger.error('Ошибка при удалении товара из основной БД')
         session.rollback()
         p = session.query(Product).filter(Product.href == href).one()
         session.delete(p)
