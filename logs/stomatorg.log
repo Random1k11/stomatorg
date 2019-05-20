@@ -1,8 +1,0 @@
-[2019-03-27 12:49:45,786, level: ERROR, file: __main__, function: links_on_products], message: Элемент не загрузился
-Traceback (most recent call last):
-  File "stomatorg.py", line 63, in links_on_products
-    Elem = WebDriverWait(self.browser, 45).until(EC.presence_of_element_located((By.XPATH, '//button[@id="dropdownMenuOutput"]')))
-  File "/home/dima/Рабочий стол/стоматология/stomatorg/venv/lib/python3.5/site-packages/selenium/webdriver/support/wait.py", line 80, in until
-    raise TimeoutException(message, screen, stacktrace)
-selenium.common.exceptions.TimeoutException: Message: 
-
