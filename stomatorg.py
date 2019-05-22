@@ -38,7 +38,7 @@ options.add_argument("ignore-certificate-errors")
 options.add_argument("--start-maximized")
 options.add_argument('--no-sandbox')
 
-    print(links)
+
 
 class StomatorgSpider():
 

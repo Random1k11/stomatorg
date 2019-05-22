@@ -1,4 +1,4 @@
-#!/home/dima/Рабочий стол/стоматология/stomatorg (копия)/venv/bin/python
+#!/home/dima/Рабочий стол/стоматология/stomatorg2/venv/bin/python
 
 import sys
 import getopt
